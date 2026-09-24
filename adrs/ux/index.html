@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EasyFood</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #e9d5ff; /* Fundo externo roxo médio */
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #faf5ff; /* Fundo interno roxo muito claro */
+      border-radius: 40px;
+      border: 8px solid #2e1065;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(88, 28, 135, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Section (Status + Header) com fundo roxo */
+    .top-section {
+      background: #7e22ce;
+      color: white;
+      border-radius: 0 0 24px 24px;
+      padding-bottom: 8px;
+      box-shadow: 0 4px 15px rgba(126, 34, 206, 0.2);
+      flex-shrink: 0;
+      z-index: 10;
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: center; /* Centralizado já que os ícones laterais saíram */
+      align-items: center;
+      padding: 8px 20px 16px;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 22px;
+      font-weight: 800;
+      font-style: italic;
+    }
+
+    .header-logo .icon {
+      font-size: 24px;
+    }
+
+    /* Search */
+    .search-bar {
+      margin: 20px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border: none;
+      border-radius: 30px; /* Estilo pílula */
+      padding: 14px 20px;
+      gap: 12px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(126, 34, 206, 0.08);
+    }
+
+    .search-bar input {
+      border: none;
+      outline: none;
+      background: transparent;
+      flex: 1;
+      font-size: 15px;
+      font-family: inherit;
+      color: #3b0764;
+    }
+
+    .search-bar input::placeholder {
+      color: #c084fc;
+      font-weight: 600;
+    }
+
+    /* Categories - AGORA COM QUEBRA DE LINHA E TODAS AS CATEGORIAS DO FORM */
+    .categories {
+      display: flex;
+      flex-wrap: wrap; /* Permite quebrar para a linha de baixo */
+      justify-content: center; /* Centraliza os botões */
+      gap: 8px; /* Espaço ajustado entre os chips */
+      padding: 0 20px 16px;
+      flex-shrink: 0;
+    }
+
+    .category-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px; /* Diminuído levemente para caber bem na tela */
+      border-radius: 20px;
+      background: #fff;
+      color: #7e22ce;
+      font-size: 13px; /* Fonte levemente menor */
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(126, 34, 206, 0.05);
+    }
+
+    .category-chip:hover {
+      background: #faf5ff;
+    }
+
+    .category-chip.active {
+      background: #3b0764; /* Roxo escuro para o ativo */
+      color: white;
+      transform: scale(1.05);
+      box-shadow: 0 6px 12px rgba(59, 7, 100, 0.2);
+    }
+
+    /* Section header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 20px 12px;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 19px;
+      font-weight: 800;
+      color: #2e1065;
+    }
+
+    .section-header .order-btn {
+      font-size: 14px;
+      font-weight: 700;
+      color: #9333ea;
+      cursor: pointer;
+    }
+
+    /* Restaurant list */
+    .restaurant-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+
+    .restaurant-list::-webkit-scrollbar {
+      display: none; /* Lista mais limpa sem scrollbar */
+    }
+
+    .restaurant-card {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      border: none;
+      border-left: 6px solid #a855f7; /* Barra lateral de destaque */
+      border-radius: 16px;
+      gap: 16px;
+      background: #fff;
+      box-shadow: 0 4px 15px rgba(147, 51, 234, 0.06);
+      transition: all 0.2s;
+      animation: fadeIn 0.4s ease;
+      flex-shrink: 0;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .restaurant-img {
+      width: 70px;
+      height: 70px;
+      background: #f3e8ff;
+      border-radius: 50%; /* Ícones redondos! */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 2px solid #e9d5ff;
+    }
+
+    .restaurant-img .placeholder {
+      font-size: 30px;
+    }
+
+    .restaurant-info {
+      flex: 1;
+    }
+
+    .restaurant-info h3 {
+      font-size: 16px;
+      font-weight: 800;
+      margin-bottom: 4px;
+      color: #3b0764;
+    }
+
+    .restaurant-info .meta {
+      font-size: 13px;
+      font-weight: 600;
+      color: #a855f7;
+      margin-bottom: 6px;
+    }
+
+    .restaurant-info .rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #d97706; /* Cor diferenciada para a estrela */
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .restaurant-right {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 15px;
+    }
+
+    .heart {
+      font-size: 20px;
+      color: #e9d5ff;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .heart:hover {
+      color: #9333ea;
+    }
+
+    .delivery-info {
+      font-size: 12px;
+      color: #7e22ce;
+      text-align: right;
+      font-weight: 600;
+      background: #faf5ff;
+      padding: 6px 10px;
+      border-radius: 10px;
+    }
+
+    .delivery-info .price {
+      font-weight: 800;
+      color: #3b0764;
+      display: block;
+      margin-top: 2px;
+    }
+
+    /* Load more button */
+    .load-more-btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      margin-top: 8px;
+      background: #f3e8ff;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      color: #7e22ce;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .load-more-btn:hover {
+      background: #e9d5ff;
+    }
+
+    .load-more-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9333ea;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 36px;
+      height: 36px;
+      border: 4px solid #e9d5ff;
+      border-top-color: #7e22ce;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .mini-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 3px solid #d8b4fe;
+      border-top-color: #7e22ce;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    /* Empty & Error */
+    .empty, .error {
+      text-align: center;
+      padding: 50px 20px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .empty { color: #9333ea; }
+    .error { color: #dc2626; }
+
+    .empty .icon, .error .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    /* Add Restaurant Form */
+    .add-restaurant-section {
+      display: none;
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .add-restaurant-section.active {
+      display: block;
+    }
+
+    .add-restaurant-section h2 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      color: #2e1065;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #7e22ce;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 16px;
+      border: 2px solid #e9d5ff;
+      border-radius: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s;
+      background: #fff;
+      color: #3b0764;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #9333ea;
+      box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: #7e22ce;
+      color: white;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 12px;
+      box-shadow: 0 8px 20px rgba(126, 34, 206, 0.3);
+    }
+
+    .submit-btn:hover {
+      background: #6b21a8;
+      transform: translateY(-2px);
+    }
+
+    .form-message {
+      text-align: center;
+      padding: 14px;
+      margin-top: 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      display: none;
+    }
+
+    .form-message.success {
+      display: block;
+      background: #f3e8ff;
+      color: #581c87;
+    }
+
+    .form-message.error {
+      display: block;
+      background: #fef2f2;
+      color: #dc2626;
+    }
+
+    /* Bottom nav */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around; /* Distribuir bem as duas opções */
+      padding: 16px 24px 24px;
+      background: #fff;
+      border-top: 1px solid #f3e8ff;
+      flex-shrink: 0;
+      border-radius: 0 0 32px 32px;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #c084fc;
+      cursor: pointer;
+      transition: all 0.3s;
+      padding: 8px 24px;
+      border-radius: 16px;
+    }
+
+    .nav-item.active {
+      color: #581c87;
+      background: #f3e8ff;
+    }
+
+    .nav-item .icon {
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    
+    <!-- Top Section (Header unificado) -->
+    <div class="top-section">
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span>9:41</span>
+        <span>📶 🔋</span>
+      </div>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="header-logo">
+          <span class="icon">🍴</span>
+          <span>EasyFood</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar">
+      <span>🔍</span>
+      <!-- Removido o disabled e adicionado um ID para a busca -->
+      <input type="text" id="search-input" placeholder="Buscar restaurantes...">
+    </div>
+
+    <!-- Categories com todas as opções do formulário e quebra de linha -->
+    <div class="categories" id="categories">
+      <div class="category-chip active" data-category="Todos">🍽️ Todos</div>
+      <div class="category-chip" data-category="Burger">🍔 Burger</div>
+      <div class="category-chip" data-category="Pizza">🍕 Pizza</div>
+      <div class="category-chip" data-category="Sushi">🍣 Sushi</div>
+      <div class="category-chip" data-category="Saudável">🥗 Saudável</div>
+      <div class="category-chip" data-category="Mexicana">🌮 Mexicana</div>
+      <div class="category-chip" data-category="Brasileira">🍛 Brasileira</div>
+      <div class="category-chip" data-category="Japonesa">🍱 Japonesa</div>
+      <div class="category-chip" data-category="Italiana">🍝 Italiana</div>
+    </div>
+
+    <!-- Section header -->
+    <div class="section-header">
+      <h2>Restaurantes</h2>
+      <span class="order-btn">Ordenar ▾</span>
+    </div>
+
+    <!-- Restaurant list (scrollable) -->
+    <div class="restaurant-list" id="restaurant-list">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Procurando delícias...</p>
+      </div>
+    </div>
+
+    <!-- Add Restaurant Form (hidden by default) -->
+    <div class="add-restaurant-section" id="add-restaurant-section">
+      <h2>➕ Novo Parceiro</h2>
+      <form id="add-restaurant-form">
+        <div class="form-group">
+          <label for="restaurant-name">Nome do Estabelecimento</label>
+          <input type="text" id="restaurant-name" placeholder="Ex: Taco Loco" required>
+        </div>
+        <div class="form-group">
+          <label for="restaurant-category">Especialidade</label>
+          <select id="restaurant-category" required>
+            <option value="">Selecione uma categoria</option>
+            <option value="Burger">🍔 Burger</option>
+            <option value="Pizza">🍕 Pizza</option>
+            <option value="Sushi">🍣 Sushi</option>
+            <option value="Saudável">🥗 Saudável</option>
+            <option value="Mexicana">🌮 Mexicana</option>
+            <option value="Brasileira">🍛 Brasileira</option>
+            <option value="Japonesa">🍱 Japonesa</option>
+            <option value="Italiana">🍝 Italiana</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="restaurant-rating">Avaliação (0 a 5)</label>
+          <input type="number" id="restaurant-rating" placeholder="Ex: 4.3" min="0" max="5" step="0.1" required>
+        </div>
+        <button type="submit" class="submit-btn" id="submit-btn">Adicionar Restaurante</button>
+      </form>
+      <div class="form-message" id="form-message"></div>
+    </div>
+
+    <!-- Bottom nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active" data-view="home" onclick="switchView('home')">
+        <span class="icon">🏠</span>
+        <span>Início</span>
+      </div>
+      
+      <!-- Itens de busca, salvos e perfil removidos conforme solicitado -->
+      
+      <div class="nav-item" data-view="add" onclick="switchView('add')">
+        <span class="icon">➕</span>
+        <span>Novo</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // =============================================================
+    // EasyFood - Front-end
+    // Consome a API com filtro por categoria e paginação
+    // =============================================================
+
+    const API_URL = "http://localhost:3000/restaurants";
+
+    // Quantos restaurantes exibir por vez
+    const PAGE_SIZE = 3;
+
+    // Estado da aplicação
+    let allRestaurants = [];
+    let filteredRestaurants = [];
+    let selectedCategory = "Todos";
+    let searchQuery = ""; // Estado para guardar a busca por texto
+    let currentPage = 0;
+
+    // Emojis por categoria
+    const categoryEmoji = {
+      "Pizza": "🍕",
+      "Burger": "🍔",
+      "Sushi": "🍣",
+      "Saudável": "🥗",
+      "Mexicana": "🌮",
+      "Brasileira": "🍛",
+      "Japonesa": "🍱",
+      "Italiana": "🍝"
+    };
+
+    // Preços fixos por restaurante (para não mudar no reload)
+    const deliveryPrices = {};
+
+    function getDeliveryPrice(id) {
+      if (!deliveryPrices[id]) {
+        deliveryPrices[id] = (Math.random() * 5 + 3).toFixed(2).replace(".", ",");
+      }
+      return deliveryPrices[id];
+    }
+
+    // ----- LOADING -----
+    function showLoading() {
+      const list = document.getElementById("restaurant-list");
+      list.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Procurando delícias...</p>
+        </div>
+      `;
+    }
+
+    // ----- FETCH -----
+    async function fetchRestaurants() {
+      showLoading();
+
+      try {
+        const response = await fetch(API_URL);
+        const restaurants = await response.json();
+        allRestaurants = restaurants;
+
+        setTimeout(() => {
+          filterAndRender();
+        }, 500);
+
+      } catch (error) {
+        showError();
+      }
+    }
+
+    // ----- FILTRO (Categoria + Texto) E PAGINAÇÃO -----
+    function filterAndRender() {
+      showLoading();
+
+      setTimeout(() => {
+        filteredRestaurants = allRestaurants.filter(r => {
+          // Filtro de Categoria
+          const matchCategory = selectedCategory === "Todos" || r.category === selectedCategory;
+          // Filtro de Texto (Nome do Restaurante)
+          const matchSearch = r.name.toLowerCase().includes(searchQuery);
+          
+          return matchCategory && matchSearch;
+        });
+
+        // Reseta a página
+        currentPage = 0;
+
+        // Renderiza a primeira página
+        renderPage();
+      }, 300);
+    }
+
+    function renderPage() {
+      const list = document.getElementById("restaurant-list");
+      const start = 0;
+      const end = (currentPage + 1) * PAGE_SIZE;
+      const visible = filteredRestaurants.slice(start, end);
+      const hasMore = end < filteredRestaurants.length;
+
+      if (visible.length === 0) {
+        list.innerHTML = `
+          <div class="empty">
+            <div class="icon">🔍</div>
+            <p>Nenhum restaurante encontrado.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Monta os cards
+      let html = visible.map((restaurant, index) => `
+        <div class="restaurant-card" style="animation-delay: ${index * 0.05}s">
+          <div class="restaurant-img">
+            <span class="placeholder">${categoryEmoji[restaurant.category] || "🏪"}</span>
+          </div>
+          <div class="restaurant-info">
+            <h3>${restaurant.name}</h3>
+            <div class="meta">${restaurant.category} • 20-30 min</div>
+            <div class="rating">★ ${restaurant.rating}</div>
+          </div>
+          <div class="restaurant-right">
+            <span class="heart">♡</span>
+            <div class="delivery-info">
+              Taxa<br>
+              <span class="price">R$ ${getDeliveryPrice(restaurant.id)}</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      // Botão "Carregar mais" se tiver mais resultados
+      if (hasMore) {
+        const remaining = filteredRestaurants.length - end;
+        html += `
+          <button class="load-more-btn" id="load-more-btn" onclick="loadMore()">
+            Ver mais (${remaining})
+          </button>
+        `;
+      }
+
+      list.innerHTML = html;
+    }
+
+    // ----- CARREGAR MAIS -----
+    function loadMore() {
+      const btn = document.getElementById("load-more-btn");
+      btn.disabled = true;
+      btn.innerHTML = '<span class="mini-spinner"></span> Buscando...';
+
+      setTimeout(() => {
+        currentPage++;
+        renderPage();
+
+        // Scroll suave até o final da lista
+        const list = document.getElementById("restaurant-list");
+        list.scrollTo({ top: list.scrollHeight, behavior: "smooth" });
+      }, 400);
+    }
+
+    // ----- ERRO -----
+    function showError() {
+      const list = document.getElementById("restaurant-list");
+      list.innerHTML = `
+        <div class="error">
+          <div class="icon">⚠️</div>
+          <p><strong>Servidor offline</strong></p>
+          <p style="margin-top:8px; color:#9333ea;">
+            Rode no terminal:<br>
+            <code>node server.js</code>
+          </p>
+        </div>
+      `;
+    }
+
+    // ----- EVENTO DE BUSCA DE TEXTO -----
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      searchQuery = e.target.value.toLowerCase();
+      filterAndRender();
+    });
+
+    // ----- EVENTOS DOS FILTROS (CHIPS) -----
+    const chips = document.querySelectorAll(".category-chip");
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        chips.forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        selectedCategory = chip.dataset.category;
+        filterAndRender();
+      });
+    });
+
+    // ----- INICIALIZA -----
+    fetchRestaurants();
+
+    // =============================================================
+    // Navegação entre views (Home / Cadastrar)
+    // =============================================================
+    function switchView(view) {
+      const homeElements = document.querySelectorAll('.search-bar, .categories, .section-header, .restaurant-list');
+      const addSection = document.getElementById('add-restaurant-section');
+      const navItems = document.querySelectorAll('.nav-item');
+
+      if (view === 'add') {
+        homeElements.forEach(el => el.style.display = 'none');
+        addSection.classList.add('active');
+      } else {
+        homeElements.forEach(el => el.style.display = '');
+        addSection.classList.remove('active');
+      }
+
+      // Atualiza nav ativo
+      navItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.view === view) {
+          item.classList.add('active');
+        }
+      });
+    }
+
+    // =============================================================
+    // Cadastro de Restaurante - POST /restaurants
+    // =============================================================
+    const addForm = document.getElementById('add-restaurant-form');
+    const formMessage = document.getElementById('form-message');
+
+    addForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('restaurant-name').value.trim();
+      const category = document.getElementById('restaurant-category').value;
+      const rating = parseFloat(document.getElementById('restaurant-rating').value);
+
+      if (!name || !category || isNaN(rating)) {
+        showFormMessage('Preencha todos os campos corretamente.', 'error');
+        return;
+      }
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Aguarde...';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWx1bm9AZWFzeWZvb2QuY29tIiwiaWF0IjoxNzkwMTgzMDc0LCJleHAiOjE3OTAyNjk0NzR9.1qYPLOVSl7ZEV3fmcwGIKJ9vUP7_eLnBvn83GbgMbzI'
+          },
+          body: JSON.stringify({ name, category, rating })
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao cadastrar restaurante');
+        }
+
+        const newRestaurant = await response.json();
+        showFormMessage(`✅ "${newRestaurant.name}" cadastrado com sucesso!`, 'success');
+
+        // Limpa o formulário
+        addForm.reset();
+
+        // Atualiza a lista de restaurantes
+        allRestaurants.push(newRestaurant);
+        filterAndRender();
+
+      } catch (error) {
+        showFormMessage('❌ Erro ao cadastrar. O servidor está rodando?', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Adicionar Restaurante';
+      }
+    });
+
+    function showFormMessage(text, type) {
+      formMessage.textContent = text;
+      formMessage.className = 'form-message ' + type;
+      setTimeout(() => {
+        formMessage.className = 'form-message';
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
